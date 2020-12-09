@@ -30,9 +30,7 @@ public class TestSoupServices {
 			String pala = "";
 			
 			int valorPala = (int)Math.floor(Math.random()*60+1);
-			/*System.out.println("Tamaño: "+palas.length);
-			System.out.println("valorPala: "+valorPala);*/
-			
+
 			pala = palas[valorPala];
 			
 			palabra.setPalabra(pala);
