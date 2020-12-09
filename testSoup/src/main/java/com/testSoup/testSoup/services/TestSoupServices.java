@@ -1,7 +1,11 @@
 package com.testSoup.testSoup.services;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 import java.util.Random;
 import java.util.UUID;
 
@@ -129,6 +133,53 @@ public class TestSoupServices {
 			System.out.println("ERROR");
 			return false;
 		}
+	}
+
+	public List<String> obtenerListaPalabras(String idSopa) {
+		try{
+			List<String> resultado = new ArrayList<String>();
+			InputStream input = new FileInputStream("config.properties");
+            
+			Properties prop = new Properties();
+            prop.load(input);
+
+            Gson gson = new Gson();
+            ResponseCrearSopa sopaDeLetra = gson.fromJson(prop.getProperty(idSopa), ResponseCrearSopa.class);
+            
+            List<PalabrasAgregadas> palabras = new ArrayList<PalabrasAgregadas>();
+            
+            palabras = sopaDeLetra.getPalabras();
+            
+            for (PalabrasAgregadas palabra : palabras) {
+            	resultado.add(palabra.getPalabra());
+			}
+            
+            
+            return resultado;
+
+        } catch (Exception ex) {
+        	return null;
+        }
+		
+	}
+
+	public char[][] visualizarSopa(String idSopa) {
+		try{
+			InputStream input = new FileInputStream("config.properties");
+            
+			Properties prop = new Properties();
+            prop.load(input);
+
+            Gson gson = new Gson();
+            ResponseCrearSopa sopaDeLetra = gson.fromJson(prop.getProperty(idSopa), ResponseCrearSopa.class);
+            
+            char[][] sopa = sopaDeLetra.getSopa();                        
+            
+            return sopa;
+
+        } catch (Exception ex) {
+        	return null;
+        }
 	}
 
 }
