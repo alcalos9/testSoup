@@ -5,6 +5,8 @@ public class PalabrasAgregadas {
 	private Integer orientacion;
 	private Integer fila;
 	private Integer columna;
+	private Integer filaFin;
+	private Integer columnaFin;
 	
 	public String getPalabra() {
 		return palabra;
@@ -30,10 +32,22 @@ public class PalabrasAgregadas {
 	public void setColumna(Integer columna) {
 		this.columna = columna;
 	}
+	public Integer getFilaFin() {
+		return filaFin;
+	}
+	public void setFilaFin(Integer filaFin) {
+		this.filaFin = filaFin;
+	}
+	public Integer getColumnaFin() {
+		return columnaFin;
+	}
+	public void setColumnaFin(Integer columnaFin) {
+		this.columnaFin = columnaFin;
+	}
 	@Override
 	public String toString() {
 		return "PalabrasAgregadas [palabra=" + palabra + ", orientacion=" + orientacion + ", fila=" + fila
-				+ ", columna=" + columna + "]";
+				+ ", columna=" + columna + ", filaFin=" + filaFin + ", columnaFin=" + columnaFin + "]";
 	}
-	
+
 }

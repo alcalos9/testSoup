@@ -13,6 +13,7 @@ import org.springframework.web.client.RestTemplate;
 
 import com.google.gson.Gson;
 import com.testSoup.testSoup.model.response.ResCrearSopa;
+import com.testSoup.testSoup.model.response.ResEncontrarPalabra;
 
 
 
@@ -153,6 +154,61 @@ public class MenuOpcionesServices {
 		}		
 
 		return result;
+	}
+
+	@SuppressWarnings("finally")
+	public String encontrarPalabra(RestTemplate restTemplate, String identificador, String filaIni, String columnaIni,
+			String filaIFin, String columnaFin) {
+		String result = "";
+		URL url;
+		HttpURLConnection conn = null;
+
+		try {			
+			url = new URL("http://localhost:8080/alphabetSoup/"+identificador);
+		
+			conn = (HttpURLConnection) url.openConnection();
+			conn.setRequestMethod("PUT");
+			conn.setDoOutput(true);
+			conn.setDoInput(true);
+			conn.setRequestProperty("Content-Type", "application/json");
+			conn.setRequestProperty("Accept", "application/json");
+			
+			JSONObject cred = new JSONObject();
+			
+			cred.put("sr",filaIni);
+			cred.put("sc",columnaIni);
+			cred.put("er",filaIFin);
+			cred.put("ec",columnaFin);
+			
+			OutputStreamWriter wr= new OutputStreamWriter(conn.getOutputStream());
+			wr.write(cred.toString());
+			wr.flush();
+			wr.close();
+			
+			BufferedReader br = new BufferedReader(new InputStreamReader((conn.getInputStream())));			
+			
+			StringBuilder response = new StringBuilder();
+			String responseSingle = null; 
+            while ((responseSingle = br.readLine()) != null)  
+            { 
+                response.append(responseSingle); 
+            } 
+            String resultado = response.toString();
+            
+            Gson gson = new Gson();  
+            ResEncontrarPalabra founder = gson.fromJson(resultado, ResEncontrarPalabra.class);
+            
+            result = founder.getResultado();
+
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			result = null;
+		}finally {
+			conn.disconnect();
+			return result;
+		}		
+
 	}
 
 }

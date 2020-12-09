@@ -12,7 +12,9 @@ import java.util.UUID;
 import org.apache.commons.configuration.PropertiesConfiguration;
 
 import com.google.gson.Gson;
+import com.testSoup.testSoup.model.response.ResCrearSopa;
 import com.testSoup.testSoup.model.resquest.ReqCrearSopa;
+import com.testSoup.testSoup.model.resquest.ReqEncontrarPalabra;
 import com.testSoup.testSoup.model.soup.PalabrasAgregadas;
 import com.testSoup.testSoup.model.soup.ResponseCrearSopa;
 
@@ -60,8 +62,12 @@ public class TestSoupServices {
 					sopa[x + p][i] = pala.charAt(i);
 
 					if (i == 0) {
-						palabra.setFila(x + p);
-						palabra.setColumna(i);
+						palabra.setFila(i);
+						palabra.setColumna(x + p);
+					}
+					if(i == (pala.length() - 1)) {
+						palabra.setFilaFin(i);
+						palabra.setColumnaFin(x + p);
 					}
 				}
 			}
@@ -72,8 +78,12 @@ public class TestSoupServices {
 					sopa[x][p] = pala.charAt(i);
 
 					if (i == 0) {
-						palabra.setFila(x);
-						palabra.setColumna(p);
+						palabra.setFila(p);
+						palabra.setColumna(x);
+					}
+					if(i == (pala.length() - 1)) {
+						palabra.setFilaFin(p);
+						palabra.setColumnaFin(x);
 					}
 				}
 			}
@@ -84,8 +94,12 @@ public class TestSoupServices {
 					sopa[p][x] = pala.charAt(i);
 
 					if (i == 0) {
-						palabra.setFila(p);
-						palabra.setColumna(x);
+						palabra.setFila(x);
+						palabra.setColumna(p);
+					}
+					if(i == (pala.length() - 1)) {
+						palabra.setFilaFin(x);
+						palabra.setColumnaFin(p);
 					}
 				}
 			}
@@ -96,8 +110,12 @@ public class TestSoupServices {
 					sopa[i][x + p] = pala.charAt(i);
 
 					if (i == 0) {
-						palabra.setFila(i);
-						palabra.setColumna(x + p);
+						palabra.setFila(x + p);
+						palabra.setColumna(i);
+					}
+					if(i == (pala.length() - 1)) {
+						palabra.setFilaFin(x +p);
+						palabra.setColumnaFin(i);
 					}
 				}
 			}
@@ -181,5 +199,87 @@ public class TestSoupServices {
         	return null;
         }
 	}
+
+	public ResponseCrearSopa obtenerSopa(String idSopa) {
+		try{
+			InputStream input = new FileInputStream("config.properties");
+            
+			Properties prop = new Properties();
+            prop.load(input);
+
+            Gson gson = new Gson();
+            ResponseCrearSopa sopaDeLetra = gson.fromJson(prop.getProperty(idSopa), ResponseCrearSopa.class);
+
+            return sopaDeLetra;
+
+        } catch (Exception ex) {
+        	return null;
+        }
+	}
+
+	public void actualizarSopa(String identificador, PalabrasAgregadas pal) {
+		ResponseCrearSopa sopaLetra = obtenerSopa(identificador);
+		char [][] sopa = sopaLetra.getSopa();		
+		
+		try{
+			if (pal.getOrientacion() == 0) {
+				int i, x, p;
+				p = pal.getColumna();
+				x = pal.getFila();
+				for (i = 0; i < pal.getPalabra().length(); i++) {					
+					sopa[x + p][i] = Character.toUpperCase(pal.getPalabra().charAt(i));
+					p = p + 1;
+				}
+			}
+			
+			if (pal.getOrientacion() == 1) {
+				int i, x, p;
+				p = pal.getColumna();
+				x = pal.getFila();
+				for (i = 0; i < pal.getPalabra().length(); i++) {					
+					sopa[x][p] = Character.toUpperCase(pal.getPalabra().charAt(i));
+					System.out.println(sopa[x][p]);
+					p = p + 1;
+				}
+			}
+			
+			if (pal.getOrientacion() == 2) {
+				int i, x, p;
+				p = pal.getColumna();
+				x = pal.getFila();
+				for (i = 0; i < pal.getPalabra().length(); i++) {				
+					sopa[p][x] = Character.toUpperCase(pal.getPalabra().charAt(i));				
+					p = p + 1;
+				}						
+			}
+			
+			if (pal.getOrientacion()  == 3) {
+				int i, x, p;
+				p = pal.getColumna();
+				x = pal.getFila();
+				for (i = 0; i < pal.getPalabra().length(); i++) {					
+					sopa[i][x + p] = Character.toUpperCase(pal.getPalabra().charAt(i));	
+					p = p + 1;
+				}
+			}
+			
+			sopaLetra.setSopa(sopa);		
+					
+			Gson gson = new Gson();
+			String json = gson.toJson(sopaLetra);
+			
+			PropertiesConfiguration conf = new PropertiesConfiguration("config.properties");
+			conf.setProperty(sopaLetra.getIdentificador(), json);
+			conf.save();
+			
+			/*
+			for (int i = 0; i < sopa.length; i++) {
+				for (int j = 0; j < sopa.length; j++)
+					System.out.print(sopa[j][i] + "  ");
+				System.out.println();
+			}*/
+		} catch (Exception ex) {}
+	}
+
 
 }

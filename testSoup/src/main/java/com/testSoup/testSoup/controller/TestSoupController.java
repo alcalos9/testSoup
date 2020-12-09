@@ -129,15 +129,24 @@ public class TestSoupController {
 		ResEncontrarPalabra resultado = new ResEncontrarPalabra();
 
 		try {
-			System.out.println(idSopa);
-			System.out.println(request.toString());
-
-			resultado.setResultado("Correcto");
+			//Obtener la sopa de letras			
+			ResponseCrearSopa sopa = servicio.obtenerSopa(idSopa);
+			
+			//Validar que exista la palabra
+			boolean valida = false;
+			for (PalabrasAgregadas p : sopa.getPalabras()) {
+				if(p.getFila() == request.getSr() && p.getFilaFin() == request.getEr() && p.getColumna() == request.getSc() && p.getColumnaFin() == request.getEc()){
+					servicio.actualizarSopa(sopa.getIdentificador(), p);
+					valida = true;
+				}
+			}	
+			
+			if(valida) resultado.setResultado("Palabra encontrada");
+			else resultado.setResultado("No se encuentra esa palabra");
 
 			return resultado;
 		} catch (Exception e) {
-			resultado.setResultado("Error al encontrar la palabra");
-			;
+			resultado.setResultado("Error al encontrar la palabra");			
 			return resultado;
 		}
 
@@ -200,7 +209,31 @@ public class TestSoupController {
 					}
 					break;
 				case 4:
-					System.out.println("Has seleccionado la opcion 3");
+					System.out.println(" -> Ingrese el identificador de la sopa de letras:");
+					identificador = sn.next();
+					System.out.println(" -> Ingrese la fila de inicio:");
+					String filaIni = sn.next();
+					System.out.println(" -> Ingrese la columna de inicio:");
+					String columnaIni = sn.next();
+					System.out.println(" -> Ingrese la fila de fin:");
+					String filaIFin = sn.next();
+					System.out.println(" -> Ingrese la columna de inicio:");
+					String columnaFin = sn.next();
+					
+					String resul = servicioMenu.encontrarPalabra(restTemplate, identificador, filaIni, columnaIni, filaIFin, columnaFin);
+					
+					if(resul != null) {
+						System.out.println(" -> Palabra encontrada:");
+						char[][] soup = servicioMenu.obtenerSopa(restTemplate, identificador);
+						for (int i = 0; i < soup.length; i++) {
+							for (int j = 0; j < soup.length; j++)
+								System.out.print(soup[j][i] + "  ");
+							System.out.println();
+						}
+					}else {
+						System.out.println(" -> No se encontró la palabra");
+					}
+					
 					break;
 				case 5:
 					salir = true;
